@@ -1,0 +1,5 @@
+venv/
+/.idea
+*.py[cod]
+*.pytest
+__pycache__/
