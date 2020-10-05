@@ -20,11 +20,11 @@ Creating basic web service with reverse proxy and load balancing
     - session persistence: sends to previously connected server so that data is easy accessed if previously generated
   * proxy-pass: original headers must be passed to next destination for inspection by application server/web application
     - can be unreliable if multiple layers or untrusted proxy
-  * health checks: ensures server is up before creating trying to pass request on
+  * health checks: ensures server is up before creating trying to pass request
 - configure gunicorn as application server
   * workers do not share memory so storage like ReDis/NoSQL should be used
   * workers are stored in memory so start up is not added to overhead
-  * should restrict 
+  * whitelist ips that need access
 - configure flask as web application
   * context starts from request to response
     - allows for pre/post processing
@@ -44,6 +44,8 @@ Creating basic web service with reverse proxy and load balancing
   * required firewall(ports) opened including able to handle responses to initial connection
   * SeLinux permissions set
   * proper permissions granted, most will start as sudo and revert to non-sudo
+    - linked files, if not restricted, can be compromised to run different code
+      * used to quickly enable/disable programs/configurations
   * dns records pointed towards cloud-provider
   * cloud-provider records set so domain name can be used
 
@@ -84,7 +86,8 @@ Give access to ssh file:
     > sudo systemctl restart sshd
 
 Add firewall rules:
-    > sudo firewalld-cmd --add-service=http --zone=public --permanent
+    > sudo firewall-cmd --add-service=http --zone=public --permanent
+    > sudo firewall-cmd --add-service=https --zone=public --permanent
 ```
 ---
 
@@ -131,6 +134,6 @@ flask run -h 0.0.0.0 -p 5000
 Run GUnicorn with workers
 ```bash
 export FLASK_ENV=testing
-gunicorn -w 2 -b 0.0.0.0:5000 --chdir src/ 'app:create_app()'
+gunicorn -w 2 -b 0.0.0.0:5000 --chdir path/to/src/ 'app:create_app()'
 ```
 ---
