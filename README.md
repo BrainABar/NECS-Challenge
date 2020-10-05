@@ -1,5 +1,5 @@
-# NECS-Challenge
-Creating basic web service with reverse proxy and load balancing
+## Introduction
+What is needed to get an application running with a load balancer and https
 
 - configure server
   * Updates/Patches
@@ -38,7 +38,7 @@ Creating basic web service with reverse proxy and load balancing
   * 3rd party verifies validity of server, if self-served, many browsers will alert to possible compromise
   * application server, at least with gunicorn needs to be to use `upstream` so that nginx passes traffic along
     - must use socket with gunicorn or configure middleware/custom entry point
-      * facing 104 error, gunicorn responds to initial ssl request and workers terminate connection
+      * 104 error, gunicorn responds to initial ssl request and workers terminate connection since they respond right away
   * proxy server, handles ssl and connects with other services using http or desired protocol
 - deployment
   * required firewall(ports) opened including able to handle responses to initial connection
@@ -86,13 +86,11 @@ Give access to ssh file:
     > sudo systemctl restart sshd
 
 Add firewall rules:
+    > sudo firewall-cmd --add-service=ssh --zone=public --permanent
     > sudo firewall-cmd --add-service=http --zone=public --permanent
     > sudo firewall-cmd --add-service=https --zone=public --permanent
 ```
 ---
-
-
-
 Set up NGINX
 - Guide to add nginx repo as it is the most updated: https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-open-source/#stable_vs_mainline
 - CentOS does not come with sites-available/enabled but is included with Ubuntu
@@ -101,10 +99,11 @@ sudo mkdir /etc/nginx/sites-available
 sudo mkdir /etc/nginx/sites-enabled
 ```
 - allows for easier enabling/disabling of sites by linking what is needed from sites-available
+  * not needed but makes it easier to distinguish what is active in sites-enabled
 ```bash
 sudo ln -s /etc/nginx/sites-available/<filename>.conf /etc/nginx/sites-enabled/
 ```
-- also able to add file by using `include <file/path/sample.conf>;` at bottom of nginx.conf
+- also able to add file at bottom of nginx.conf
 - reload nginx: `sudo nginx -s reload`
 - Basic log inspection
 ```
